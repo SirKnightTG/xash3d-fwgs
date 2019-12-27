@@ -68,7 +68,7 @@ void Sys_Print( const char *pMsg );
 void Sys_PrintLog( const char *pMsg );
 void Sys_InitLog( void );
 void Sys_CloseLog( void );
-void Sys_Quit( void );
+void Sys_Quit( void ) NORETURN;
 
 //
 // sys_con.c
@@ -83,7 +83,7 @@ int Sys_LogFileNo( void );
 //
 // con_win.c
 //
-#ifdef _WIN32
+#if XASH_WIN32
 void Wcon_InitConsoleCommands( void );
 void Wcon_ShowConsole( qboolean show );
 void Wcon_Init( void );

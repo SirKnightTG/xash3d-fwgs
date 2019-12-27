@@ -589,7 +589,7 @@ void SV_RestartAmbientSounds( void )
 		SV_StartSound( pfnPEntityOfEntIndex( si->entnum ), CHAN_STATIC, si->name, si->volume, si->attenuation, 0, si->pitch );
 	}
 
-#ifndef XASH_DEDICATED // TODO: ???
+#if !XASH_DEDICATED // TODO: ???
 	// restart soundtrack
 	if( S_StreamGetCurrentState( curtrack, looptrack, &position ))
 	{
@@ -618,7 +618,7 @@ void SV_RestartDecals( void )
 	// g-cont. add space for studiodecals if present
 	host.decalList = (decallist_t *)Z_Calloc( sizeof( decallist_t ) * MAX_RENDER_DECALS * 2 );
 
-#ifndef XASH_DEDICATED
+#if !XASH_DEDICATED
 	if( !Host_IsDedicated() )
 	{
 		host.numdecals = ref.dllFuncs.R_CreateDecalList( host.decalList );
@@ -1296,7 +1296,7 @@ void pfnSetModel( edict_t *e, const char *m )
 	char	name[MAX_QPATH];
 	qboolean	found = false;
 	model_t	*mod;
-	int	i;
+	int	i = 1;
 
 	if( !SV_IsValidEdict( e ))
 		return;
@@ -1308,7 +1308,7 @@ void pfnSetModel( edict_t *e, const char *m )
 	if( COM_CheckString( name ))
 	{
 		// check to see if model was properly precached
-		for( i = 1; i < MAX_MODELS && sv.model_precache[i][0]; i++ )
+		for( ; i < MAX_MODELS && sv.model_precache[i][0]; i++ )
 		{
 			if( !Q_stricmp( sv.model_precache[i], name ))
 			{
@@ -3049,7 +3049,7 @@ void SV_SetStringArrayMode( qboolean dynamic )
 }
 
 #ifdef XASH_64BIT
-#ifndef _WIN32
+#if !XASH_WIN32
 #define USE_MMAP
 #include <sys/mman.h>
 #endif

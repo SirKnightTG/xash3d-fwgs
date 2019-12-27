@@ -87,7 +87,7 @@ static const dframetype_t *R_SpriteLoadFrame( model_t *mod, const void *pin, msp
 	pspriteframe->gl_texturenum = gl_texturenum;
 	*ppframe = pspriteframe;
 
-	return ( const dspriteframe_t* )(( const byte* )pin + sizeof( dspriteframe_t ) + pinframe.width * pinframe.height * bytes );
+	return ( const dframetype_t* )(( const byte* )pin + sizeof( dspriteframe_t ) + pinframe.width * pinframe.height * bytes );
 }
 
 /*
@@ -206,7 +206,7 @@ void Mod_LoadSpriteModel( model_t *mod, const void *buffer, qboolean *loaded, ui
 	for( i = 0; i < mod->numframes; i++ )
 	{
 		frametype_t frametype = pframetype->type;
-		psprite->frames[i].type = frametype;
+		psprite->frames[i].type = (spriteframetype_t)frametype;
 
 		switch( frametype )
 		{
@@ -858,6 +858,7 @@ void R_DrawSpriteModel( cl_entity_t *e )
 	{
 	case kRenderTransAlpha:
 		pglDepthMask( GL_FALSE );
+		// fallthrough
 	case kRenderTransColor:
 	case kRenderTransTexture:
 		pglEnable( GL_BLEND );
@@ -865,6 +866,7 @@ void R_DrawSpriteModel( cl_entity_t *e )
 		break;
 	case kRenderGlow:
 		pglDisable( GL_DEPTH_TEST );
+		// fallthrough
 	case kRenderTransAdd:
 		pglEnable( GL_BLEND );
 		pglBlendFunc( GL_SRC_ALPHA, GL_ONE );

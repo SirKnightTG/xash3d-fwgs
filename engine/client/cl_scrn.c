@@ -18,6 +18,7 @@ GNU General Public License for more details.
 #include "vgui_draw.h"
 #include "qfont.h"
 #include "input.h"
+#include "library.h"
 
 convar_t *scr_centertime;
 convar_t *scr_loading;
@@ -351,7 +352,7 @@ void SCR_BeginLoadingPlaque( qboolean is_background )
 	if( CL_IsInMenu( ) && !cls.changedemo && !is_background )
 	{
 		UI_SetActiveMenu( false );
-		if( cls.state == ca_disconnected )
+		if( cls.state == ca_disconnected && !(GameState->curstate == STATE_RUNFRAME && GameState->nextstate != STATE_RUNFRAME) )
 			SCR_UpdateScreen();
 	}
 
@@ -726,6 +727,9 @@ SCR_VidInit
 */
 void SCR_VidInit( void )
 {
+	if( !ref.initialized ) // don't call VidInit too soon
+		return;
+
 	memset( &clgame.ds, 0, sizeof( clgame.ds )); // reset a draw state
 	memset( &gameui.ds, 0, sizeof( gameui.ds )); // reset a draw state
 	memset( &clgame.centerPrint, 0, sizeof( clgame.centerPrint ));
@@ -777,7 +781,7 @@ void SCR_Init( void )
 
 	if( !UI_LoadProgs( ))
 	{
-		Con_Printf( S_ERROR "can't initialize gameui.dll\n" ); // there is non fatal for us
+		Con_Printf( S_ERROR "can't initialize gameui DLL: %s\n", COM_GetLibraryError() ); // there is non fatal for us
 		host.allow_console = true; // we need console, because menu is missing
 	}
 

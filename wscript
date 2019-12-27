@@ -101,7 +101,7 @@ def configure(conf):
 		conf.fatal('Please set a build type, for example "-T release"')
 	elif not conf.options.BUILD_TYPE in valid_build_types:
 		conf.end_msg(conf.options.BUILD_TYPE, color='RED')
-		conf.fatal('Invalid build type. Valid are: %s' % valid_build_types.join(', '))
+		conf.fatal('Invalid build type. Valid are: %s' % ', '.join(valid_build_types))
 	conf.end_msg(conf.options.BUILD_TYPE)
 
 	# -march=native should not be used
@@ -226,6 +226,7 @@ def configure(conf):
 	}
 
 	compiler_optional_flags = [
+#		'-Wall', '-Wextra', '-Wpedantic',
 		'-fdiagnostics-color=always',
 		'-Werror=return-type',
 		'-Werror=parentheses',
@@ -235,18 +236,23 @@ def configure(conf):
 		'-Werror=duplicated-branches', # BEWARE: buggy
 		'-Werror=bool-compare',
 		'-Werror=bool-operation',
+		'-Wuninitialized',
+		'-Winit-self',
+		'-Werror=implicit-fallthrough=2', # clang incompatible without "=2"
 #		'-Wdouble-promotion', # disable warning flood
 		'-Wstrict-aliasing',
 	]
 
 	c_compiler_optional_flags = [
+		'-Werror=incompatible-pointer-types',
 		'-Werror=implicit-function-declaration',
 		'-Werror=int-conversion',
 		'-Werror=implicit-int',
 		'-Werror=strict-prototypes',
 		'-Werror=old-style-declaration',
 		'-Werror=old-style-definition',
-		'-Werror=declaration-after-statement'
+		'-Werror=declaration-after-statement',
+		'-Werror=enum-conversion'
 	]
 
 	linkflags = conf.get_flags_by_type(linker_flags, conf.options.BUILD_TYPE, conf.env.COMPILER_CC, conf.env.CC_VERSION[0])
@@ -280,8 +286,12 @@ def configure(conf):
 	# And here C++ flags starts to be treated separately
 	cxxflags = list(cflags)
 	if conf.env.COMPILER_CC != 'msvc':
-		conf.check_cc(cflags=cflags, msg= 'Checking for required C flags')
-		conf.check_cxx(cxxflags=cflags, msg= 'Checking for required C++ flags')
+		conf.check_cc(cflags=cflags, linkflags=linkflags, msg= 'Checking for required C flags')
+		conf.check_cxx(cxxflags=cflags, linkflags=linkflags, msg= 'Checking for required C++ flags')
+
+		conf.env.append_unique('CFLAGS', cflags)
+		conf.env.append_unique('CXXFLAGS', cxxflags)
+		conf.env.append_unique('LINKFLAGS', linkflags)
 
 		cxxflags += conf.filter_cxxflags(compiler_optional_flags, cflags)
 		cflags += conf.filter_cflags(compiler_optional_flags + c_compiler_optional_flags, cflags)

@@ -17,7 +17,7 @@ GNU General Public License for more details.
 #include "miniz.h"
 #include "imagelib.h"
 #include "mathlib.h"
-#ifndef _WIN32
+#if !XASH_WIN32
 #include <netinet/in.h>
 #endif
 
@@ -216,6 +216,10 @@ qboolean Image_LoadPNG( const char *name, const byte *buffer, fs_offset_t filesi
 		break;
 	case PNG_CT_RGBA:
 		pixel_size = 4;
+		break;
+	default:
+		pixel_size = 0; // make compiler happy
+		ASSERT( false );
 		break;
 	}
 

@@ -566,7 +566,7 @@ static void SetWidthAndHeightFromCommandLine( void )
 
 static void SetFullscreenModeFromCommandLine( void )
 {
-#ifndef __ANDROID__
+#if !XASH_MOBILE_PLATFORM
 	if ( Sys_CheckParm("-fullscreen") )
 	{
 		Cvar_Set( "fullscreen", "1" );
@@ -612,7 +612,7 @@ void R_CollectRendererNames( void )
 		pfn = COM_GetProcAddress( dll, GET_REF_HUMANREADABLE_NAME );
 		if( !pfn ) // just in case
 		{
-			Con_Reportf( "R_CollectRendererNames: can't find GetHumanReadableName export in %s\n", temp, COM_GetLibraryError() );
+			Con_Reportf( "R_CollectRendererNames: can't find GetHumanReadableName export in %s\n", temp );
 			Q_strncpy( ref.readableNames[i], renderers[i], sizeof( ref.readableNames[i] ));
 		}
 		else
@@ -635,7 +635,7 @@ qboolean R_Init( void )
 	string refopt;
 
 	gl_vsync = Cvar_Get( "gl_vsync", "0", FCVAR_ARCHIVE,  "enable vertical syncronization" );
-	gl_showtextures = Cvar_Get( "gl_showtextures", "0", FCVAR_CHEAT, "show all uploaded textures" );
+	gl_showtextures = Cvar_Get( "r_showtextures", "0", FCVAR_CHEAT, "show all uploaded textures" );
 	r_adjust_fov = Cvar_Get( "r_adjust_fov", "1", FCVAR_ARCHIVE, "making FOV adjustment for wide-screens" );
 	r_decals = Cvar_Get( "r_decals", "4096", FCVAR_ARCHIVE, "sets the maximum number of decals" );
 	gl_wgl_msaa_samples = Cvar_Get( "gl_wgl_msaa_samples", "0", FCVAR_GLCONFIG, "samples number for multisample anti-aliasing" );
